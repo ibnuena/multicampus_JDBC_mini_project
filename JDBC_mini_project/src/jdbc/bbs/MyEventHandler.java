@@ -6,6 +6,8 @@ import java.awt.event.*;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import javax.swing.JOptionPane;
+
 public class MyEventHandler implements ActionListener {
 
 	private MyBoardApp gui;// View
@@ -31,18 +33,79 @@ public class MyEventHandler implements ActionListener {
 			removeMember();
 		} else if (obj == gui.bbsWrite) { // 게시판 글쓰기
 			bbs_write();
+			bbs_list();
+			bbs_my_list();
 		} else if (obj == gui.btLogin) { // 로그인 처리
 			login();
+			bbs_my_list();
 		} else if (obj == gui.bbsList) { // 게시판 글 목록
-
+			bbs_list();
 		} else if (obj == gui.bbsDel) { // 게시글 삭제
 			// 로그인한 사람이 자신이 쓴 글만 삭제
-
+			remove_bbs();
 		} else if (obj == gui.bbsFind) {
 			// title로 검색
 		}
 
 	}// -------------------------------
+
+	private void remove_bbs() {
+		// 1. 입력한 id값 받기
+		String delNo = JOptionPane.showInputDialog("삭제할 글 번호를 입력하세요");
+//		String delNo = Integer.parseInt(JOptionPane.showInputDialog("삭제할 글 번호를 입력하세요"));
+
+		String del_bbs = gui.tfWriter.getText();
+
+		// 2. 유효성 체크
+		if (delNo == null || delNo.trim().equals("")) {
+			gui.showMsg("삭제할 글 번호를 ID를 입력하세요");
+			return;
+		}
+
+		// 3. userDao의 deleteMember(id) 호출
+		try {
+			int n = userDao.deleteMember(delId.trim());
+
+			// 4. 결과 메세지 처리
+
+			String msg = (n > 0) ? "회원탈퇴 완료!!" : "탈퇴 실패-없는 ID입니다";
+			gui.showMsg(msg);
+
+			if (n > 0) {
+				gui.tabbedPane.setEnabledAt(2, false);
+				gui.tabbedPane.setEnabledAt(3, false);
+				gui.clear1();
+				gui.tabbedPane.setSelectedIndex(0); // 로그인 탭 선택
+			}
+		} catch (SQLException e) {
+
+		}
+
+	}
+
+	private void bbs_list() {
+		try {
+			// userDao의 selectAll() 호출
+			ArrayList<BbsVO> bbsList = bbsDao.selectAll();
+
+			gui.showList(bbsList);
+			//
+		} catch (SQLException e) {
+			gui.showMsg(e.getMessage());
+		}
+	}
+	
+	private void bbs_my_list() {
+		try {
+			// userDao의 selectAll() 호출
+			ArrayList<BbsVO> bbsList = bbsDao.selectAll();
+
+			gui.showMyList(bbsList, gui.tfWriter.getText());
+			//
+		} catch (SQLException e) {
+			gui.showMsg(e.getMessage());
+		}
+	}
 
 	private void bbs_write() {
 		// 1. 입력값 받기
@@ -50,22 +113,22 @@ public class MyEventHandler implements ActionListener {
 		String writer = gui.tfWriter.getText();
 		String content = gui.taContent.getText();
 
-		// 2. 유효성 체크 
+		// 2. 유효성 체크
 		if (title == null || content == null || title.trim().isEmpty() || content.trim().isEmpty()) {
 			gui.showMsg("글제목, 내용은 필수 입력사항입니다");
 			gui.tfId.requestFocus();
 			return;
 		}
 
-		// 3. 입력값들을 MemberVO객체에 담아주기
+		// 3. 입력값들을 BbsVO객체에 담아주기
 		BbsVO bbs = new BbsVO(0, title, writer, content, null);
 
-		// 4. userDao의 insertMember()호출
+		// 4. bbsDao의 insertBbs()호출
 		try {
 			int n = bbsDao.insertBbs(bbs);
 
 			// 5. 결과에 따른 메시지 처리
-			String msg = (n>0) ? "글쓰기 성공" : "글쓰기 실패";
+			String msg = (n > 0) ? "글쓰기 성공" : "글쓰기 실패";
 			gui.showMsg(msg);
 			if (n > 0) {
 				gui.tabbedPane.setSelectedIndex(3);
@@ -74,7 +137,7 @@ public class MyEventHandler implements ActionListener {
 			}
 
 		} catch (SQLException e) {
-			gui.showMsg("아이디는 이미 사용 중 입니다: " + e.getMessage());
+			gui.showMsg(e.getMessage());
 		}
 	}
 
