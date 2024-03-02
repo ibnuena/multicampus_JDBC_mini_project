@@ -312,6 +312,7 @@ public class MyBoardApp extends JFrame {// View
 		btLogin.addActionListener(handler);
 		bbsWrite.addActionListener(handler);
 		bbsList.addActionListener(handler);
+		bbsDel.addActionListener(handler);
 
 		
 		// 글목록 불러오기

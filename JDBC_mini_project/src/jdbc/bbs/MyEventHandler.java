@@ -52,30 +52,27 @@ public class MyEventHandler implements ActionListener {
 	private void remove_bbs() {
 		// 1. 입력한 id값 받기
 		String delNo = JOptionPane.showInputDialog("삭제할 글 번호를 입력하세요");
-//		String delNo = Integer.parseInt(JOptionPane.showInputDialog("삭제할 글 번호를 입력하세요"));
 
-		String del_bbs = gui.tfWriter.getText();
+		String login_id = gui.tfWriter.getText(); // 현재 로그인중인 아이디
 
 		// 2. 유효성 체크
 		if (delNo == null || delNo.trim().equals("")) {
-			gui.showMsg("삭제할 글 번호를 ID를 입력하세요");
+			gui.showMsg("삭제할 글 번호를 입력하세요");
 			return;
 		}
 
-		// 3. userDao의 deleteMember(id) 호출
+		// 3. bbsDao의 deleteBbs(no, login_id) 호출
 		try {
-			int n = userDao.deleteMember(delId.trim());
+			int n = bbsDao.deleteBbs(Integer.parseInt(delNo), login_id);
 
 			// 4. 결과 메세지 처리
-
-			String msg = (n > 0) ? "회원탈퇴 완료!!" : "탈퇴 실패-없는 ID입니다";
+			String msg = (n > 0) ? "글 삭제 완료!!" : "글 삭제 실패(없는 글번호이거나 본인이 작성한 게시글이 아닙니다.)";
 			gui.showMsg(msg);
-
+			
 			if (n > 0) {
-				gui.tabbedPane.setEnabledAt(2, false);
-				gui.tabbedPane.setEnabledAt(3, false);
-				gui.clear1();
-				gui.tabbedPane.setSelectedIndex(0); // 로그인 탭 선택
+				bbs_my_list();
+				bbs_list();
+				gui.tabbedPane.setSelectedIndex(4); 
 			}
 		} catch (SQLException e) {
 
