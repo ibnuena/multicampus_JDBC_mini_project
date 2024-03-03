@@ -45,9 +45,32 @@ public class MyEventHandler implements ActionListener {
 			remove_bbs();
 		} else if (obj == gui.bbsFind) {
 			// title로 검색
+			search_bbs();
 		}
 
 	}// -------------------------------
+
+	private void search_bbs() {
+		// 검색어 받기
+		String search = gui.tfSearch.getText();
+
+		// 유효성 체크
+		if (search == null || search.trim().isEmpty()) {
+			gui.showMsg("검색어(제목)를 입력하세요.");
+			gui.tfSearch.requestFocus();
+			return;
+		}
+
+		// 3. bbsDao의 searchBbs(search) 호출
+		try {
+			ArrayList<BbsVO> searchList = bbsDao.searchBbs(search);
+
+			gui.showList(searchList);
+			//
+		} catch (SQLException e) {
+			gui.showMsg(e.getMessage());
+		}
+	}
 
 	private void remove_bbs() {
 		// 1. 입력한 id값 받기
@@ -68,21 +91,21 @@ public class MyEventHandler implements ActionListener {
 			// 4. 결과 메세지 처리
 			String msg = (n > 0) ? "글 삭제 완료!!" : "글 삭제 실패(없는 글번호이거나 본인이 작성한 게시글이 아닙니다.)";
 			gui.showMsg(msg);
-			
+
 			if (n > 0) {
 				bbs_my_list();
 				bbs_list();
-				gui.tabbedPane.setSelectedIndex(4); 
+				gui.tabbedPane.setSelectedIndex(4);
 			}
 		} catch (SQLException e) {
-
+			gui.showMsg(e.getMessage());
 		}
 
 	}
 
 	private void bbs_list() {
 		try {
-			// userDao의 selectAll() 호출
+			// bbsDao의 selectAll() 호출
 			ArrayList<BbsVO> bbsList = bbsDao.selectAll();
 
 			gui.showList(bbsList);
@@ -91,7 +114,7 @@ public class MyEventHandler implements ActionListener {
 			gui.showMsg(e.getMessage());
 		}
 	}
-	
+
 	private void bbs_my_list() {
 		try {
 			// userDao의 selectAll() 호출
@@ -160,6 +183,7 @@ public class MyEventHandler implements ActionListener {
 				gui.showMsg(id + "님 환영합니다");
 				gui.tabbedPane.setEnabledAt(2, true); // 게시판 탭 활성화
 				gui.tabbedPane.setEnabledAt(3, true);
+				gui.tabbedPane.setEnabledAt(4, true);
 				gui.setTitle(id + "님 로그인 중...");
 				gui.tfWriter.setText(id);
 				gui.tabbedPane.setSelectedIndex(3);
@@ -168,6 +192,7 @@ public class MyEventHandler implements ActionListener {
 				gui.showMsg("아이디 또는 비밀번호가 일치하지 않습니다");
 				gui.tabbedPane.setEnabledAt(2, false);
 				gui.tabbedPane.setEnabledAt(3, false);
+				gui.tabbedPane.setEnabledAt(4, false);
 			}
 		} catch (SQLException e) {
 			gui.showMsg(e.getMessage());

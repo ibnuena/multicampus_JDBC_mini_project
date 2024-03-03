@@ -7,7 +7,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-
 //게시판 관련 crud 수행 => data layer
 public class BbsDAO {
 
@@ -49,7 +48,7 @@ public class BbsDAO {
 		}
 	}
 
-	private ArrayList<BbsVO> makeList(ResultSet rs2) throws SQLException {
+	private ArrayList<BbsVO> makeList(ResultSet rs) throws SQLException {
 		ArrayList<BbsVO> arr = new ArrayList<>();
 		while (rs.next()) {
 			int no = rs.getInt("no");
@@ -64,27 +63,42 @@ public class BbsDAO {
 
 		return arr;
 	}
-	
+
 	// 게시글 삭제
-	public int deleteBbs(int no, String login_id) throws SQLException{
+	public int deleteBbs(int no, String login_id) throws SQLException {
 		try {
-			System.out.println("1");
 			con = DBUtil.getCon();
 			// delete문 작성
 			String sql = "delete from bbs where no=? and writer=?";
 			// ps 얻기
 			ps = con.prepareStatement(sql);
-			System.out.println("2");
 
 			// ? setting
 			ps.setInt(1, no);
 			ps.setString(2, login_id);
-			System.out.println("3");
 			// 실행 -> 실행결과 반환
 			int n = ps.executeUpdate();
-			System.out.println("12");
 			return n;
-		}finally {
+		} finally {
+			close();
+		}
+	}
+
+	
+	/** 글 검색 */
+	public ArrayList<BbsVO> searchBbs(String title) throws SQLException {
+		try {
+			con = DBUtil.getCon();
+			System.out.println("title" + title);
+
+			String sql = "SELECT no, title, writer, content, wdate FROM bbs where title like ? ORDER BY no DESC";
+//			
+			ps = con.prepareStatement(sql);
+			ps.setString(1, "%" + title + "%");
+			rs = ps.executeQuery();
+			System.out.println("222");
+			return makeList(rs);
+		} finally {
 			close();
 		}
 	}

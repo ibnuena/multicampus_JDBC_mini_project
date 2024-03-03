@@ -29,6 +29,7 @@ public class MyBoardApp extends JFrame {// View
 	JTextField tfNo;
 	JTextField tfWriter;
 	JTextField tfTitle;
+	JTextField tfSearch;
 	JButton btLogin, btJoin, btDel, btList, btClear;
 	JButton bbsWrite, bbsDel, bbsFind, bbsList;
 	JTextArea taMembers, taList, taContent, taMyList;
@@ -243,16 +244,10 @@ public class MyBoardApp extends JFrame {// View
 		taList.setBorder(new TitledBorder("글 목 록"));
 
 		JPanel panel_5_1 = new JPanel();
-		panel_5_1.setBounds(12, 528, 355, 46);
+		panel_5_1.setBounds(250, 528, 100, 46);
 		panel_5.add(panel_5_1);
 		panel_5_1.setLayout(new GridLayout(1, 0, 0, 0));
 
-		bbsDel = new JButton("글삭제");
-		bbsDel.setActionCommand("글삭제");
-		bbsDel.setForeground(new Color(0, 0, 0));
-		bbsDel.setFont(new Font("SansSerif", Font.PLAIN, 12));
-		bbsDel.setBackground(new Color(209, 243, 237));
-		panel_5_1.add(bbsDel);
 
 		bbsFind = new JButton("글검색");
 		bbsFind.setActionCommand("글검색");
@@ -260,14 +255,22 @@ public class MyBoardApp extends JFrame {// View
 		bbsFind.setFont(new Font("SansSerif", Font.PLAIN, 12));
 		bbsFind.setBackground(new Color(209, 243, 237));
 		panel_5_1.add(bbsFind);
-
-		bbsList = new JButton("글목록");
+		
+		tfSearch = new JTextField();
+		tfSearch.setBounds(20, 528, 200, 44);
+		panel_5.add(tfSearch);
+		tfSearch.setColumns(10);
+		
+		
+		bbsList = new JButton("모든글");
+		bbsList.setSize(70, 40);
+		bbsList.setLocation(285, 40);
 		bbsList.setForeground(new Color(0, 0, 0));
 		bbsList.setActionCommand("글목록");
 		bbsList.setFont(new Font("SansSerif", Font.PLAIN, 12));
 		bbsList.setBackground(new Color(209, 243, 237));
-		panel_5_1.add(bbsList);
-		
+		panel_5.add(bbsList);
+
 		//-----------------마이페이지-----------------------
 		JPanel panel_7 = new JPanel();
 		tabbedPane.addTab("마이페이지", null, panel_7, null);
@@ -313,6 +316,7 @@ public class MyBoardApp extends JFrame {// View
 		bbsWrite.addActionListener(handler);
 		bbsList.addActionListener(handler);
 		bbsDel.addActionListener(handler);
+		bbsFind.addActionListener(handler);
 
 		
 		// 글목록 불러오기
@@ -328,7 +332,8 @@ public class MyBoardApp extends JFrame {// View
 
 		// 초기에 글쓰기 탭은 비활성화 -> 로그인 해야 활성화
 		tabbedPane.setEnabledAt(2, false); // 글쓰기
-//		tabbedPane.setEnabledAt(3, false); // 글목록
+		tabbedPane.setEnabledAt(3, false); // 글목록
+		tabbedPane.setEnabledAt(4, false); // 마이페이지
 
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setSize(400, 700);
@@ -439,6 +444,4 @@ public class MyBoardApp extends JFrame {// View
 		taMyList.append("============================================\n");
 
 	}
-	
-	
 }
